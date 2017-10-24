@@ -14,9 +14,20 @@ infile = "allInOne.txt"
 outfile = "allInOneFull.txt"
 
 sentList = list(open(infile,'r'))
+outPtr = open(outfile, 'w')
+
 for sent in sentList:
     text = ''.join([i if ord(i) < 128 else ' ' for i in sent])
     sentClear = ' '.join(text.split())
-    rowsClear = list(script.sentToTriples(sentClear))
-
-    print text2
+    # print sentClear
+    #rowsClear = list(script.sentToTriples(sentClear)) # this line is too haste, sentClear is like:
+    #Kris Osborn is editor-in-chief of Defense Systems. | (Kris Osborn,BDSPerson,0,11)@#$(Defense Systems,BDSOrganization,34,49)
+    sent, remaining = sentClear.split('|')
+    # print remaining
+    headRaw, tailRaw = remaining.split('@#$')
+    headStr =headRaw.split(',')[0].split('(')[1]
+    tailStr = tailRaw.split(',')[0].split('(')[1]
+    # print headStr
+    # print tailStr
+    # print sent
+    rowsClear = list(script.sentToTriples(sent))#似乎总是连通的
