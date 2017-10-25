@@ -5,6 +5,7 @@ import copy
 
 def sentToTriples(sent):
     #returns a list of triples
+    sent = ''.join([i if i.isalpha() else ' ' for i in sent])
     eng_parser = StanfordDependencyParser(r"/home/losphoenix/StanfordNLP/stanford-parser/stanford-parser.jar",
                             r"/home/losphoenix/StanfordNLP/stanford-parser/stanford-parser-3.6.0-models.jar",
                             r"/home/losphoenix/StanfordNLP/stanford-parser/englishPCFG.ser.gz")
@@ -25,7 +26,7 @@ def triplesToPathWord(triples, v0, v1):
     verge = [[v0],[v1]]
     newVerge = [];
     for i in range(1, 100):
-        print i
+        # print i
         newVerge = [];
         for triple in triples:
             hWord = triple[0][0];
@@ -69,12 +70,64 @@ def triplesToPathWord(triples, v0, v1):
 
 
 
+
         #print(list(eng_parser.parse("the quick brown fox jumps over the lazy dog".split())))
 
-text = "“All good things take patience,” Intel’s GM of data centers Diane Bryant said"
-text2 = ''.join([i if ord(i) < 128 else ' ' for i in text])
-print text2
+# text = "All good things take patience. Intel’s GM of data centers Diane Bryant said it"
+# text2 = ''.join([i if ord(i) < 128 else ' ' for i in text])
+# print text2
+#
+# row = list(sentToTriples(text2))
+#
+# triplesToPathWord(row, "All", "Diane")
+def triplesToPathPhrase(triples, v0, v1):
+    #this converts triples to an Array of Path from v0 to v1 or vise
+    verge = []
+    for v in v0.split(' '):
+        verge.append([v])
+    for v in v1.split(' '):
+        verge.append([v])
 
-row = list(sentToTriples(text2))
+    # print verge
+    for i in range(1, 20):
+        # print i
+        newVerge = [];
+        for triple in triples:
+            hWord = triple[0][0];
+            tWord = triple[2][0];
 
-triplesToPathWord(row, "All", "Diane")
+            for vv in verge:
+
+                v = copy.deepcopy(vv);
+                # print "v"
+                # print verge
+                if v[len(v) - 1] == hWord :
+                    v.insert(len(v), tWord);
+                    q = v;
+                    newVerge.insert(len(newVerge), q);
+                    # print newVerge;
+                elif v[len(v) - 1] == tWord :
+                    v.insert(len(v), hWord);
+                    q = v;
+                    newVerge.insert(len(newVerge), q);
+                    # print v;
+                    # print newVerge;
+
+        verge = copy.deepcopy(newVerge)
+        #print verge
+        for v in verge:
+            # print v[0] + ' ' +v[len(v)-1]
+            # print v0 + '----' + v1
+            if v0.find(v[0]) != -1:
+                if v1.find(v[len(v)-1]) != -1:
+                    # v.pop(0);
+                    # v.pop(len(v) - 1);
+                    print v
+                    return v
+            if v1.find(v[0]) != -1:
+                if v0.find(v[len(v) - 1]) != -1:
+                    # v.pop(0);
+                    # v.pop(len(v)-1);
+                    print v
+                    return v
+    return None
